@@ -1,2 +1,2 @@
-export { getFunctionInfoFromNode, parseFunctionsFromFile } from "./parser";
+export { getFunctionInfoFromNode } from "./parser";
 export { getFunctionVariables } from "./utils";
