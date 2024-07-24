@@ -1,0 +1,17 @@
+$ tsup src/index.ts --format cjs,esm --dts --minify --clean
+[34mCLI[39m Building entry: src\index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.2.1
+[34mCLI[39m Using tsup config: C:\Users\ozhan\Desktop\oz\self\visual-ts\packages\ts-generator\package.json
+[34mCLI[39m Target: es2022
+[34mCLI[39m Cleaning output folder
+[34mCJS[39m Build start
+[34mESM[39m Build start
+[32mESM[39m [1mdist\index.mjs [22m[32m3.56 KB[39m
+[32mESM[39m ⚡️ Build success in 41ms
+[32mCJS[39m [1mdist\index.js [22m[32m4.25 KB[39m
+[32mCJS[39m ⚡️ Build success in 42ms
+[34mDTS[39m Build start
+[32mDTS[39m ⚡️ Build success in 1940ms
+[32mDTS[39m [1mdist\index.d.ts  [22m[32m2.79 KB[39m
+[32mDTS[39m [1mdist\index.d.mts [22m[32m2.79 KB[39m
