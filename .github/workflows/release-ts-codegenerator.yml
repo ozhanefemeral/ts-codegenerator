@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "packages/ts-generator/**"
 
 jobs:
   release:
@@ -28,8 +26,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # This expects your changesets to be in the root packages/ts-generator/.changeset
-          cwd: ./packages/ts-generator
+          # The package is now at the root level, so we don't need to specify a subdirectory
           publish: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
