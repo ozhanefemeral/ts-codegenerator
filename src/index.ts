@@ -10,6 +10,8 @@ export {
   getUniqueVariableName,
   createFunctionCallBlock,
   functionCallBlockToTypeScript,
+  ifBlockToTypeScript,
+  createIfBlock,
 } from "./generator";
 
 export type {
