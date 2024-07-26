@@ -12,6 +12,8 @@ export {
   functionCallBlockToTypeScript,
   ifBlockToTypeScript,
   createIfBlock,
+  createWhileBlock,
+  whileBlockToTypeScript,
 } from "./generator";
 
 export type {
@@ -27,6 +29,7 @@ export type {
   ElseIfBlock,
   IfBlock,
   CodeBlock,
+  WhileLoopBlock,
 } from "./types";
 
 export { scanCodebase } from "./codebase-scanner";

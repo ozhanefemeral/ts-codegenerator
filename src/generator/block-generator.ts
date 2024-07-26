@@ -3,6 +3,7 @@ import { CodeBlock } from "types";
 import { CodeGeneratorState } from "types/generator";
 import { Statement } from "typescript";
 import { ifBlockToTypeScript } from "./blocks/if-block";
+import { whileBlockToTypeScript } from "./blocks/while-block";
 
 export function blockToTypeScript(
   block: CodeBlock,
@@ -13,5 +14,7 @@ export function blockToTypeScript(
       return functionCallBlockToTypeScript(block, state);
     case "if":
       return ifBlockToTypeScript(block, state);
+    case "while":
+      return whileBlockToTypeScript(block, state);
   }
 }

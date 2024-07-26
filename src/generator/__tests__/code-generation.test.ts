@@ -1,68 +1,63 @@
 import { CodeBlock } from "../../types/blocks";
 import { FunctionInfo } from "../../types/common";
+import { CodeGeneratorState } from "../../types/generator";
 import { createFunctionCallBlock } from "../blocks/function-call";
 import { createIfBlock } from "../blocks/if-block";
+import { createWhileBlock } from "../blocks/while-block";
 import { generateCode } from "../code-generator";
 
 describe("Code Generation", () => {
-  test("generates correct code for function calls and if-block", () => {
+  test("generates correct code for while loop with nested if-block and function calls", () => {
     // Define function infos
-    const func1Info: FunctionInfo = {
-      name: "getGreeting",
-      returnType: "string",
-      parameters: [],
+    const updateCounterInfo: FunctionInfo = {
+      name: "updateCounter",
+      returnType: "number",
+      parameters: [{ name: "counter", type: "number" }],
     };
 
-    const func2Info: FunctionInfo = {
-      name: "processGreeting",
-      returnType: "void",
-      parameters: [{ name: "greeting", type: "string" }],
+    const checkConditionInfo: FunctionInfo = {
+      name: "checkCondition",
+      returnType: "boolean",
+      parameters: [{ name: "counter", type: "number" }],
     };
 
-    const func3Info: FunctionInfo = {
-      name: "handleTrueCondition",
+    const processEvenInfo: FunctionInfo = {
+      name: "processEven",
       returnType: "void",
-      parameters: [],
+      parameters: [{ name: "counter", type: "number" }],
     };
 
-    const func4Info: FunctionInfo = {
-      name: "handleFalseCondition",
+    const processOddInfo: FunctionInfo = {
+      name: "processOdd",
       returnType: "void",
-      parameters: [],
+      parameters: [{ name: "counter", type: "number" }],
+    };
+
+    // Create a shared state object
+    const state: CodeGeneratorState = {
+      blocks: [],
+      variables: [{ name: "counter", type: "number", index: 0 }],
+      isAsync: false,
     };
 
     // Create blocks
     const blocks: CodeBlock[] = [
-      createFunctionCallBlock(func1Info, {
-        blocks: [],
-        variables: [],
-        isAsync: false,
-      }),
-      createFunctionCallBlock(func2Info, {
-        blocks: [],
-        variables: [{ name: "greeting", type: "string", index: 0 }],
-        isAsync: false,
-      }),
-      createIfBlock(
-        "greeting.length > 0",
+      createWhileBlock(
+        "counter < 10",
         [
-          createFunctionCallBlock(func3Info, {
-            blocks: [],
-            variables: [],
-            isAsync: false,
-          }),
+          createFunctionCallBlock(updateCounterInfo, state),
+          createFunctionCallBlock(checkConditionInfo, state),
+          createIfBlock(
+            "checkcondition",
+            [createFunctionCallBlock(processEvenInfo, state)],
+            state,
+            undefined,
+            {
+              blocks: [createFunctionCallBlock(processOddInfo, state)],
+            }
+          ),
         ],
-        { blocks: [], variables: [], isAsync: false },
-        undefined,
-        {
-          blocks: [
-            createFunctionCallBlock(func4Info, {
-              blocks: [],
-              variables: [],
-              isAsync: false,
-            }),
-          ],
-        }
+        state
       ),
     ];
 
@@ -72,13 +67,15 @@ describe("Code Generation", () => {
     // Expected code (formatted for readability)
     const expectedCode = `
 function generatedFunction() {
-    const getgreeting = getGreeting();
-    const processgreeting = processGreeting(greeting);
-    if (greeting.length > 0) {
-        const handletruecondition = handleTrueCondition();
-    }
-    else {
-        const handlefalsecondition = handleFalseCondition();
+    while (counter < 10) {
+        const updatecounter = updateCounter(counter);
+        const checkcondition = checkCondition(counter);
+        if (checkcondition) {
+            const processeven = processEven(counter);
+        }
+        else {
+            const processodd = processOdd(counter);
+        }
     }
 }
     `.trim();
