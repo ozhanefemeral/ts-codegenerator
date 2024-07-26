@@ -31,5 +31,11 @@ export interface ElseBlock {
   blocks: CodeBlock[];
 }
 
+export interface WhileLoopBlock extends Block {
+  condition: string;
+  loopBlocks: CodeBlock[];
+  blockType: "while";
+}
+
 // Add more block types as implemented
-export type CodeBlock = FunctionCallBlock | IfBlock;
+export type CodeBlock = FunctionCallBlock | IfBlock | WhileLoopBlock;
