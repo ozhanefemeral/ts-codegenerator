@@ -4,16 +4,23 @@ export {
   createVariableWithFunctionCall,
   extractVariables,
   generateCode,
-} from "./functions";
+  blockToTypeScript,
+  extractReturnType,
+  findVariableByType,
+  getUniqueVariableName,
+  createFunctionCallBlock,
+  functionCallBlockToTypeScript,
+} from "./generator";
 
 export type {
   VariableInfoWithIndex,
   CodebaseInfo,
-  FileParserProps,
   FunctionInfo,
   ModuleInfoFields,
   TypeInfo,
   VariableInfo,
+  Block,
+  FunctionCallBlock,
 } from "./types";
 
 export { scanCodebase } from "./codebase-scanner";
