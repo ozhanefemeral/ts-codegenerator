@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.1.0
+
+### Minor Changes
+
+- 4bee205: add if & while blocks
+
 ## 2.0.0
 
 ### Major Changes
