@@ -19,8 +19,12 @@ export type {
   ModuleInfoFields,
   TypeInfo,
   VariableInfo,
-  Block,
   FunctionCallBlock,
+  ElseBlock,
+  CodeGeneratorState,
+  ElseIfBlock,
+  IfBlock,
+  CodeBlock,
 } from "./types";
 
 export { scanCodebase } from "./codebase-scanner";
