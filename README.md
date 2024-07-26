@@ -1,56 +1,78 @@
-# @ozhanefe/ts-codegenerator
+# ts-codegenerator
 
-`@ozhanefe/ts-codegenerator` is a TypeScript utility package that provides powerful tools for parsing TypeScript code and generating new code based on the parsed information. It's designed to help developers analyze existing TypeScript projects and automate code generation tasks.
+Write TypeScript code with one click!
 
-## Features
+[![npm version](https://badge.fury.io/js/%40ozhanefe%2Fts-codegenerator.svg)](https://badge.fury.io/js/%40ozhanefe%2Fts-codegenerator)
 
-- **Module Parsing**: Extract information about functions, variables and types
-- **Code Generation**: Generate new TypeScript code based on parsed information.
-- **Block-based Code Generation**: New 'Blocks' concept for more flexible code generation.
-- **Function Call Generation**: Create TypeScript AST nodes for function calls, including handling of async functions and Promises.
-- **Variable Declaration Generation**: Generate variable declarations with associated function calls.
-- **Unique Variable Naming**: Automatically generate unique variable names to avoid conflicts when generating code.
-- **Type Extraction**: Extract and process return types from functions, including handling of Promise types.
+## Introduction
 
-## Installation
+`ts-codegenerator` is a tool designed to simplify and accelerate TypeScript development. Since we developers often write similar patterns and structures, this package aims to automate these repetitive tasks, so we can focus on unique stuff. It is heavily used under [VisualTS monorepo](https://github.com/ozhanefemeral/visual-ts) to generate TypeScript/React (in the future) code.
 
-Install the package using bun:
+## Key Concept: Blocks
 
-```bash
-bun add @ozhanefe/ts-codegenerator
-```
+At the core of `ts-codegenerator` is the concept of 'Blocks'. Blocks are reusable elements of TypeScript code - similar to how LEGO blocks can be combined to create complex structures. By assembling these Blocks, you can quickly generate complex TypeScript functions and modules.
 
-Note: This package requires TypeScript as a peer dependency. Make sure you have TypeScript installed in your project.
+## Why Use ts-codegenerator?
 
-## Usage
+1. **Efficiency**: Automate repetitive coding patterns to save time and reduce errors.
+2. **Cross-Platform**: Generate TypeScript code anytime, anywhere, on any device.
+3. **Flexibility**: Easily adapt and modify generated code to suit specific needs. It can scan your codebase and generate code that fits your existing patterns.
+4. **Visual Programming**: Using visual interfaces you connect the dots to better understand the code you are writing.
 
-Here's a basic example of how to use the package:
+## Getting Started
 
-```typescript
-import {
-  parseFunctionsFromFile,
-  generateCode,
-} from "@ozhanefe/ts-codegenerator";
+1. Install the package:
 
-// Parse functions from a TypeScript file
-const { functionsInfo } = parseFunctionsFromFile("path/to/your/file.ts");
+   ```
+   bun add @ozhanefe/ts-codegenerator
+   ```
 
-// Generate new code based on the parsed functions
-const generatedCode = generateCode(functionsInfo);
+2. Import the necessary functions:
 
-console.log(generatedCode);
-```
+   ```typescript
+   import {
+     createFunctionCallBlock,
+     generateCode,
+   } from "@ozhanefe/ts-codegenerator";
+   ```
 
-## Running Tests
+3. Create code blocks:
 
-To run the unit tests, including the new tests for the function call block generator:
+   ```typescript
+   const block1 = createFunctionCallBlock(
+     {
+       name: "fetchUser",
+       returnType: "Promise<User>",
+       parameters: [{ name: "id", type: "number" }],
+     },
+     state
+   );
 
-```bash
-bun test
-```
+   const block2 = createFunctionCallBlock(
+     {
+       name: "processUser",
+       returnType: "void",
+       parameters: [{ name: "user", type: "User" }],
+     },
+     state
+   );
+   ```
+
+4. Generate TypeScript code:
+
+   ```typescript
+   const code = generateCode([block1, block2]);
+   console.log(code);
+   ```
+
+5. Output:
+   ```typescript
+   async function generatedFunction() {
+     const user = await fetchUser(id);
+     processUser(user);
+   }
+   ```
 
 ## Contributing
 
-Contributions are welcome! Please create an issue or pull request if you have any suggestions or feedback.
-
-p.s: We manually set the version of '@ozhanefe/ts-codegenerator' package in the apps isntead of linking from the local package. So what we work on does not affect the apps.
+We welcome contributions to improve `ts-codegenerator`. If you've identified a bug, have a feature request, or want to contribute code, please open an issue or pull request on our GitHub repository.
