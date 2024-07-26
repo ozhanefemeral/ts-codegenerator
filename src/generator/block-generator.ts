@@ -1,17 +1,17 @@
 import { functionCallBlockToTypeScript } from "./blocks/function-call";
-import { CodeBlock, VariableInfoWithIndex } from "types";
+import { CodeBlock } from "types";
 import { CodeGeneratorState } from "types/generator";
 import { Statement } from "typescript";
+import { ifBlockToTypeScript } from "./blocks/if-block";
 
 export function blockToTypeScript(
   block: CodeBlock,
-  state: CodeGeneratorState | { variables: VariableInfoWithIndex[] }
+  state: CodeGeneratorState
 ): Statement {
   switch (block.blockType) {
     case "functionCall":
       return functionCallBlockToTypeScript(block, state);
-
-    default:
-      throw new Error(`Unknown block type: ${block.blockType}`);
+    case "if":
+      return ifBlockToTypeScript(block, state);
   }
 }

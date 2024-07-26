@@ -10,6 +10,8 @@ export {
   getUniqueVariableName,
   createFunctionCallBlock,
   functionCallBlockToTypeScript,
+  ifBlockToTypeScript,
+  createIfBlock,
 } from "./generator";
 
 export type {
@@ -19,8 +21,12 @@ export type {
   ModuleInfoFields,
   TypeInfo,
   VariableInfo,
-  Block,
   FunctionCallBlock,
+  ElseBlock,
+  CodeGeneratorState,
+  ElseIfBlock,
+  IfBlock,
+  CodeBlock,
 } from "./types";
 
 export { scanCodebase } from "./codebase-scanner";

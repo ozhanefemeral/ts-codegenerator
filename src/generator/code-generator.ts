@@ -15,7 +15,9 @@ export function generateCode(blocks: CodeBlock[]): string {
   const state: CodeGeneratorState = {
     blocks: blocks,
     variables: [],
-    isAsync: blocks.some((block) => block.isAsync),
+    isAsync: blocks.some((block) =>
+      block.blockType === "functionCall" ? block.isAsync : false
+    ),
   };
 
   const statements: Statement[] = blocks.map((block) =>
