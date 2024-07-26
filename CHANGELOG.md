@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.0.0
+
+### Major Changes
+
+- ce87c59: add 'blocks'
+
 ## 1.8.0
 
 ### Minor Changes
