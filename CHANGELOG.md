@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.2.0
+
+### Minor Changes
+
+- 48bfa05: add immutable state
+
 ## 2.1.1
 
 ### Patch Changes
