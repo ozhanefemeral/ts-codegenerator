@@ -1,4 +1,4 @@
-import { CodeBlock } from "../../types/blocks";
+import { CodeBlock, WhileLoopBlock } from "../../types/blocks";
 import { FunctionInfo } from "../../types/common";
 import { CodeGeneratorState } from "../../types/generator";
 import { createFunctionCallBlock } from "../blocks/function-call";
@@ -22,50 +22,96 @@ describe("While Block Generator", () => {
 
   test("generates simple while block successfully", () => {
     const condition = "x < 10";
-    const loopBlocks: CodeBlock[] = [
-      createFunctionCallBlock(dummyFunctionInfo, initialState),
-    ];
+    const { block: dummyBlock, state: updatedState } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      initialState
+    );
+    const loopBlocks: CodeBlock[] = [dummyBlock];
 
-    const result = createWhileBlock(condition, loopBlocks, initialState);
+    const { block, state } = createWhileBlock(
+      condition,
+      loopBlocks,
+      updatedState
+    );
 
-    expect(result).toBeDefined();
-    expect(result.blockType).toBe("while");
-    expect(result.condition).toBe(condition);
-    expect(result.loopBlocks).toEqual(loopBlocks);
-    expect(result.index).toBe(1); // 0 is the dummy function block
+    expect(block).toBeDefined();
+    expect(block.blockType).toBe("while");
+    expect(block.condition).toBe(condition);
+    expect(block.loopBlocks).toEqual(loopBlocks);
+    expect(block.index).toBe(1); // 0 is the dummy function block
+    expect(state.blocks).toHaveLength(2);
+    expect(state.blocks[1]).toBe(block);
   });
 
   test("generates nested while block successfully", () => {
-    const outerCondition = "x < 10";
-    const innerWhileBlock = createWhileBlock(
-      "y < 5",
-      [createFunctionCallBlock(dummyFunctionInfo, initialState)],
-      initialState
-    );
+    let currentState = initialState;
 
-    const result = createWhileBlock(
+    // Create inner while block
+    const { block: dummyBlock, state: state1 } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      currentState
+    );
+    currentState = state1;
+
+    const { block: innerWhileBlock, state: state2 } = createWhileBlock(
+      "y < 5",
+      [dummyBlock],
+      currentState
+    );
+    currentState = state2;
+
+    // Create outer while block
+    const outerCondition = "x < 10";
+    const { block, state } = createWhileBlock(
       outerCondition,
       [innerWhileBlock],
-      initialState
+      currentState
     );
 
-    expect(result).toBeDefined();
-    expect(result.blockType).toBe("while");
-    expect(result.condition).toBe(outerCondition);
-    expect(result.loopBlocks).toHaveLength(1);
-    expect(result.loopBlocks[0]).toBe(innerWhileBlock);
-    expect(result.index).toBe(2); // 0 is the dummy function block, 1 is the inner while block
+    expect(block).toBeDefined();
+    expect(block.blockType).toBe("while");
+    expect(block.condition).toBe(outerCondition);
+    expect(block.loopBlocks).toHaveLength(1);
+    expect(block.loopBlocks[0]).toBe(innerWhileBlock);
+    expect(block.index).toBe(2); // 0 is the dummy function block, 1 is the inner while block
+    expect(state.blocks).toHaveLength(3);
+    expect(state.blocks[2]).toBe(block);
   });
 
-  test("updates state correctly after creating while block", () => {
-    const condition = "x < 10";
-    const loopBlocks: CodeBlock[] = [
-      createFunctionCallBlock(dummyFunctionInfo, initialState),
-    ];
+  test("creates multiple while blocks and updates state correctly", () => {
+    let currentState = initialState;
 
-    const result = createWhileBlock(condition, loopBlocks, initialState);
+    // Create first while block
+    const { block: dummyBlock1, state: state1 } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      currentState
+    );
+    currentState = state1;
 
-    expect(initialState.blocks).toHaveLength(2);
-    expect(initialState.blocks[1]).toBe(result);
+    const { block: whileBlock1, state: state2 } = createWhileBlock(
+      "x < 10",
+      [dummyBlock1],
+      currentState
+    );
+    currentState = state2;
+
+    // Create second while block
+    const { block: dummyBlock2, state: state3 } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      currentState
+    );
+    currentState = state3;
+
+    const { block: whileBlock2, state: finalState } = createWhileBlock(
+      "y < 5",
+      [dummyBlock2],
+      currentState
+    );
+
+    expect(whileBlock1.index).toBe(1);
+    expect(whileBlock2.index).toBe(3);
+    expect(finalState.blocks).toHaveLength(4);
+    expect(finalState.blocks[1]).toBe(whileBlock1);
+    expect(finalState.blocks[3]).toBe(whileBlock2);
   });
 });
