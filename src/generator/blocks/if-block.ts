@@ -1,4 +1,10 @@
-import { CodeBlock, ElseBlock, ElseIfBlock, IfBlock } from "types";
+import {
+  BlockAndState,
+  CodeBlock,
+  ElseBlock,
+  ElseIfBlock,
+  IfBlock,
+} from "types";
 import { CodeGeneratorState } from "types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
@@ -84,7 +90,7 @@ export function createIfBlock(
   state: CodeGeneratorState,
   elseIfBlocks?: ElseIfBlock[],
   elseBlock?: ElseBlock
-): IfBlock {
+): BlockAndState<IfBlock> {
   const index = state.blocks.length;
 
   const block: IfBlock = {
@@ -96,7 +102,10 @@ export function createIfBlock(
     blockType: "if",
   };
 
-  state.blocks.push(block);
+  const newState: CodeGeneratorState = {
+    ...state,
+    blocks: [...state.blocks, block],
+  };
 
-  return block;
+  return { block, state: newState };
 }

@@ -4,7 +4,12 @@ import {
   getUniqueVariableName,
   PROMISE_PREFIX,
 } from "generator/utils";
-import { FunctionCallBlock, FunctionInfo, VariableInfoWithIndex } from "types";
+import {
+  BlockAndState,
+  FunctionCallBlock,
+  FunctionInfo,
+  VariableInfoWithIndex,
+} from "types";
 import { CodeGeneratorState } from "types/generator";
 import {
   AwaitExpression,
@@ -139,7 +144,7 @@ function createVariableDeclaration(
 export function createFunctionCallBlock(
   functionInfo: FunctionInfo,
   state: CodeGeneratorState
-): FunctionCallBlock {
+): BlockAndState<FunctionCallBlock> {
   const index = state.blocks.length;
 
   const variableName = functionInfo.name.toLowerCase();
@@ -159,10 +164,14 @@ export function createFunctionCallBlock(
     blockType: "functionCall",
   };
 
-  state.blocks.push(block);
-  state.variables.push(newVariable);
+  const newState: CodeGeneratorState = {
+    ...state,
+    variables: [...state.variables, newVariable],
+    blocks: [...state.blocks, block],
+    isAsync: state.isAsync || block.isAsync,
+  };
 
-  return block;
+  return { block, state: newState };
 }
 
 /**

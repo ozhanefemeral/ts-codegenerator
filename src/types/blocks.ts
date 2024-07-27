@@ -1,4 +1,5 @@
 import { FunctionInfo, VariableInfo } from "./common";
+import { CodeGeneratorState } from "./generator";
 
 export interface Block {
   index: number;
@@ -39,3 +40,8 @@ export interface WhileLoopBlock extends Block {
 
 // Add more block types as implemented
 export type CodeBlock = FunctionCallBlock | IfBlock | WhileLoopBlock;
+
+export interface BlockAndState<T extends Block> {
+  block: T;
+  state: CodeGeneratorState;
+}

@@ -1,4 +1,4 @@
-import { CodeBlock, WhileLoopBlock } from "../../types/blocks";
+import { BlockAndState, CodeBlock, WhileLoopBlock } from "../../types/blocks";
 import { CodeGeneratorState } from "../../types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
@@ -21,7 +21,7 @@ export function createWhileBlock(
   condition: string,
   loopBlocks: CodeBlock[],
   state: CodeGeneratorState
-): WhileLoopBlock {
+): BlockAndState<WhileLoopBlock> {
   const index = state.blocks.length;
 
   const block: WhileLoopBlock = {
@@ -31,7 +31,10 @@ export function createWhileBlock(
     blockType: "while",
   };
 
-  state.blocks.push(block);
+  const newState: CodeGeneratorState = {
+    ...state,
+    blocks: [...state.blocks, block],
+  };
 
-  return block;
+  return { block, state: newState };
 }

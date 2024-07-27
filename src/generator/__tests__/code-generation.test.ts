@@ -33,36 +33,62 @@ describe("Code Generation", () => {
       parameters: [{ name: "counter", type: "number" }],
     };
 
-    // Create a shared state object
-    const state: CodeGeneratorState = {
+    // Create initial state
+    let state: CodeGeneratorState = {
       blocks: [],
       variables: [{ name: "counter", type: "number", index: 0 }],
       isAsync: false,
     };
 
     // Create blocks
-    const blocks: CodeBlock[] = [
-      createWhileBlock(
-        "counter < 10",
-        [
-          createFunctionCallBlock(updateCounterInfo, state),
-          createFunctionCallBlock(checkConditionInfo, state),
-          createIfBlock(
-            "checkcondition",
-            [createFunctionCallBlock(processEvenInfo, state)],
-            state,
-            undefined,
-            {
-              blocks: [createFunctionCallBlock(processOddInfo, state)],
-            }
-          ),
-        ],
-        state
-      ),
-    ];
+    let whileLoopBlocks: CodeBlock[] = [];
+
+    // Update counter
+    const { block: updateCounterBlock, state: state1 } =
+      createFunctionCallBlock(updateCounterInfo, state);
+    whileLoopBlocks.push(updateCounterBlock);
+    state = state1;
+
+    // Check condition
+    const { block: checkConditionBlock, state: state2 } =
+      createFunctionCallBlock(checkConditionInfo, state);
+    whileLoopBlocks.push(checkConditionBlock);
+    state = state2;
+
+    // Process even
+    const { block: processEvenBlock, state: state3 } = createFunctionCallBlock(
+      processEvenInfo,
+      state
+    );
+    state = state3;
+
+    // Process odd
+    const { block: processOddBlock, state: state4 } = createFunctionCallBlock(
+      processOddInfo,
+      state
+    );
+    state = state4;
+
+    // Create if block
+    const { block: ifBlock, state: state5 } = createIfBlock(
+      "checkcondition",
+      [processEvenBlock],
+      state,
+      undefined,
+      { blocks: [processOddBlock] }
+    );
+    whileLoopBlocks.push(ifBlock);
+    state = state5;
+
+    // Create while block
+    const { block: whileBlock, state: finalState } = createWhileBlock(
+      "counter < 10",
+      whileLoopBlocks,
+      state
+    );
 
     // Generate code
-    const generatedCode = generateCode(blocks);
+    const generatedCode = generateCode([whileBlock]);
 
     // Expected code (formatted for readability)
     const expectedCode = `

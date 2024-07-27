@@ -1,4 +1,4 @@
-import { CodeBlock } from "../../types/blocks";
+import { CodeBlock, IfBlock } from "../../types/blocks";
 import { FunctionInfo } from "../../types/common";
 import { CodeGeneratorState } from "../../types/generator";
 import { createFunctionCallBlock } from "../blocks/function-call";
@@ -22,109 +22,117 @@ describe("If Block Generator", () => {
 
   test("generates simple if block successfully", () => {
     const condition = "x > 0";
-    const thenBlocks: CodeBlock[] = [
-      createFunctionCallBlock(dummyFunctionInfo, initialState),
-    ];
+    const { block: dummyBlock, state: updatedState } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      initialState
+    );
+    const thenBlocks: CodeBlock[] = [dummyBlock];
 
-    const result = createIfBlock(
+    const { block, state } = createIfBlock(
       condition,
       thenBlocks,
-      initialState,
+      updatedState,
       undefined,
       undefined
     );
 
-    expect(result).toBeDefined();
-    expect(result.blockType).toBe("if");
-    expect(result.condition).toBe(condition);
-    expect(result.thenBlocks).toEqual(thenBlocks);
-    expect(result.elseIfBlocks).toBeUndefined();
-    expect(result.elseBlock).toBeUndefined();
-    expect(result.index).toBe(1); // 0 is the dummy function block
+    expect(block).toBeDefined();
+    expect(block.blockType).toBe("if");
+    expect(block.condition).toBe(condition);
+    expect(block.thenBlocks).toEqual(thenBlocks);
+    expect(block.elseIfBlocks).toBeUndefined();
+    expect(block.elseBlock).toBeUndefined();
+    expect(block.index).toBe(1); // 0 is the dummy function block
+    expect(state.blocks).toHaveLength(2);
+    expect(state.blocks[1]).toBe(block);
   });
 
   test("generates if-else if-else block successfully", () => {
     const condition = "x > 0";
-    const thenBlocks: CodeBlock[] = [
-      createFunctionCallBlock(dummyFunctionInfo, initialState),
-    ];
-    const elseIfBlocks = [
-      {
-        condition: "x < 0",
-        blocks: [createFunctionCallBlock(dummyFunctionInfo, initialState)],
-      },
-    ];
-    const elseBlock = {
-      blocks: [createFunctionCallBlock(dummyFunctionInfo, initialState)],
-    };
+    let currentState = initialState;
+    const thenBlocks: CodeBlock[] = [];
+    const elseIfBlocks = [];
+    const elseBlockBlocks = [];
 
-    const result = createIfBlock(
+    // Create blocks for then, else-if, and else
+    for (let i = 0; i < 3; i++) {
+      const { block, state } = createFunctionCallBlock(
+        dummyFunctionInfo,
+        currentState
+      );
+      currentState = state;
+      if (i === 0) thenBlocks.push(block);
+      else if (i === 1)
+        elseIfBlocks.push({ condition: "x < 0", blocks: [block] });
+      else elseBlockBlocks.push(block);
+    }
+
+    const elseBlock = { blocks: elseBlockBlocks };
+
+    const { block, state } = createIfBlock(
       condition,
       thenBlocks,
-      initialState,
+      currentState,
       elseIfBlocks,
       elseBlock
     );
 
-    expect(result).toBeDefined();
-    expect(result.blockType).toBe("if");
-    expect(result.condition).toBe(condition);
-    expect(result.thenBlocks).toEqual(thenBlocks);
-    expect(result.elseIfBlocks).toEqual(elseIfBlocks);
-    expect(result.elseBlock).toEqual(elseBlock);
-    expect(result.index).toBe(3); // 0, 1, 2 are the dummy function blocks
+    expect(block).toBeDefined();
+    expect(block.blockType).toBe("if");
+    expect(block.condition).toBe(condition);
+    expect(block.thenBlocks).toEqual(thenBlocks);
+    expect(block.elseIfBlocks).toEqual(elseIfBlocks);
+    expect(block.elseBlock).toEqual(elseBlock);
+    expect(block.index).toBe(3); // 0, 1, 2 are the dummy function blocks
+    expect(state.blocks).toHaveLength(4);
+    expect(state.blocks[3]).toBe(block);
   });
 
   test("generates nested if block successfully", () => {
-    const outerCondition = "x > 0";
-    const innerIfBlock = createIfBlock(
+    let currentState = initialState;
+
+    // Create inner if block
+    const { block: dummyBlock, state: state1 } = createFunctionCallBlock(
+      dummyFunctionInfo,
+      currentState
+    );
+    currentState = state1;
+
+    const { block: innerIfBlock, state: state2 } = createIfBlock(
       "y > 0",
-      [createFunctionCallBlock(dummyFunctionInfo, initialState)],
-      initialState,
+      [dummyBlock],
+      currentState,
       [
         {
           condition: "y < 0",
-          blocks: [createFunctionCallBlock(dummyFunctionInfo, initialState)],
+          blocks: [dummyBlock],
         },
       ],
       {
-        blocks: [createFunctionCallBlock(dummyFunctionInfo, initialState)],
+        blocks: [dummyBlock],
       }
     );
+    currentState = state2;
 
-    const result = createIfBlock(
+    // Create outer if block
+    const outerCondition = "x > 0";
+    const { block, state } = createIfBlock(
       outerCondition,
       [innerIfBlock],
-      initialState,
+      currentState,
       undefined,
       undefined
     );
 
-    expect(result).toBeDefined();
-    expect(result.blockType).toBe("if");
-    expect(result.condition).toBe(outerCondition);
-    expect(result.thenBlocks).toHaveLength(1);
-    expect(result.thenBlocks[0]).toBe(innerIfBlock);
-    expect(result.elseIfBlocks).toBeUndefined();
-    expect(result.elseBlock).toBeUndefined();
-    expect(result.index).toBe(4); // 0, 1, 2, 3 are the dummy function blocks and inner if block
-  });
-
-  test("updates state correctly after creating if block", () => {
-    const condition = "x > 0";
-    const thenBlocks: CodeBlock[] = [
-      createFunctionCallBlock(dummyFunctionInfo, initialState),
-    ];
-
-    const result = createIfBlock(
-      condition,
-      thenBlocks,
-      initialState,
-      undefined,
-      undefined
-    );
-
-    expect(initialState.blocks).toHaveLength(2);
-    expect(initialState.blocks[1]).toBe(result);
+    expect(block).toBeDefined();
+    expect(block.blockType).toBe("if");
+    expect(block.condition).toBe(outerCondition);
+    expect(block.thenBlocks).toHaveLength(1);
+    expect(block.thenBlocks[0]).toBe(innerIfBlock);
+    expect(block.elseIfBlocks).toBeUndefined();
+    expect(block.elseBlock).toBeUndefined();
+    expect(block.index).toBe(2); // 0 is the dummy function block, 1 is the inner if block
+    expect(state.blocks).toHaveLength(3);
+    expect(state.blocks[2]).toBe(block);
   });
 });
