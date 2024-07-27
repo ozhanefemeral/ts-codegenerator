@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.1.1
+
+### Patch Changes
+
+- 8a2632d: untrack dist
+
 ## 2.1.0
 
 ### Minor Changes
