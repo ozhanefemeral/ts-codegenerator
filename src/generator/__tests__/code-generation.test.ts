@@ -81,7 +81,7 @@ describe("Code Generation", () => {
     state = state5;
 
     // Create while block
-    const { block: whileBlock, state: finalState } = createWhileBlock(
+    const { block: whileBlock } = createWhileBlock(
       "counter < 10",
       whileLoopBlocks,
       state

@@ -1,4 +1,4 @@
-import { CodeBlock, IfBlock } from "../../types/blocks";
+import { CodeBlock } from "../../types/blocks";
 import { FunctionInfo } from "../../types/common";
 import { CodeGeneratorState } from "../../types/generator";
 import { createFunctionCallBlock } from "../blocks/function-call";
