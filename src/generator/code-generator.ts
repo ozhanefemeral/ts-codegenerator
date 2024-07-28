@@ -1,15 +1,14 @@
-import { CodeBlock } from "types";
 import {
-  factory,
   createPrinter,
-  createSourceFile,
-  SyntaxKind,
+  factory,
+  NewLineKind,
+  NodeFlags,
+  PrinterOptions,
   Statement,
-  EmitHint,
-  ScriptTarget,
+  SyntaxKind,
 } from "typescript";
+import { CodeBlock, CodeGeneratorState } from "../types";
 import { blockToTypeScript } from "./block-generator";
-import { CodeGeneratorState } from "types/generator";
 
 export function generateCode(blocks: CodeBlock[]): string {
   const state: CodeGeneratorState = {
@@ -34,12 +33,23 @@ export function generateCode(blocks: CodeBlock[]): string {
     undefined,
     [],
     undefined,
-    factory.createBlock(statements)
+    factory.createBlock(statements, true)
   );
 
-  return createPrinter().printNode(
-    EmitHint.Unspecified,
-    functionDeclaration,
-    createSourceFile("temp.ts", "", ScriptTarget.Latest)
+  const sourceFile = factory.createSourceFile(
+    [functionDeclaration],
+    factory.createToken(SyntaxKind.EndOfFileToken),
+    NodeFlags.None
   );
+
+  const printerOptions: PrinterOptions = {
+    newLine: NewLineKind.LineFeed,
+    removeComments: false,
+    omitTrailingSemicolon: false,
+    noEmitHelpers: true,
+  };
+
+  const printer = createPrinter(printerOptions);
+
+  return printer.printFile(sourceFile);
 }
