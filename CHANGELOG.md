@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.2.1
+
+### Patch Changes
+
+- 2ac6be7: format code
+
 ## 2.2.0
 
 ### Minor Changes
