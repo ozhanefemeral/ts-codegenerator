@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.3.0
+
+### Minor Changes
+
+- 654cec7: add tree
+
 ## 2.2.1
 
 ### Patch Changes
