@@ -97,7 +97,6 @@ export function printTree(
 
 export function printNodes(nodes: CodeNode[]) {
   nodes.forEach((node, index) => {
-    console.log(`Tree ${index + 1}:`);
     printTree(node);
     console.log();
   });
