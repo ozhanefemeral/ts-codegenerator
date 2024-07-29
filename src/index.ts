@@ -18,6 +18,7 @@ export {
   blocksToTreeNodes,
   flattenTree,
   printTree,
+  printNodes,
 } from "./generator";
 
 export type {
