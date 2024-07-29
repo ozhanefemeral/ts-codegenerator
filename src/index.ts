@@ -14,6 +14,10 @@ export {
   createIfBlock,
   createWhileBlock,
   whileBlockToTypeScript,
+  blocksToFlattenedNodes,
+  blocksToTreeNodes,
+  flattenTree,
+  printTree,
 } from "./generator";
 
 export type {
@@ -30,6 +34,11 @@ export type {
   IfBlock,
   CodeBlock,
   WhileLoopBlock,
+  CodeNode,
+  FlattenedNode,
+  NestableNode,
+  NonNestableNode,
+  TreeNode,
 } from "./types";
 
 export { scanCodebase } from "./codebase-scanner";
