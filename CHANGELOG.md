@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.3.2
+
+### Patch Changes
+
+- c2f2488: update export
+
 ## 2.3.1
 
 ### Patch Changes
