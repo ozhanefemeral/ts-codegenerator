@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.3.3
+
+### Patch Changes
+
+- e00d4e5: remove unnecessary log
+
 ## 2.3.2
 
 ### Patch Changes
