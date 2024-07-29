@@ -1,4 +1,4 @@
-import { CodeBlock } from "../../types/blocks";
+import { CodeBlock, ElseBlock, ElseIfBlock } from "../../types/blocks";
 import { FunctionInfo } from "../../types/common";
 import { CodeGeneratorState } from "../../types/generator";
 import { createFunctionCallBlock } from "../blocks/function-call";
@@ -51,8 +51,8 @@ describe("If Block Generator", () => {
     const condition = "x > 0";
     let currentState = initialState;
     const thenBlocks: CodeBlock[] = [];
-    const elseIfBlocks = [];
-    const elseBlockBlocks = [];
+    const elseIfBlocks: ElseIfBlock[] = [];
+    const elseBlockBlocks: CodeBlock[] = [];
 
     // Create blocks for then, else-if, and else
     for (let i = 0; i < 3; i++) {
@@ -63,11 +63,15 @@ describe("If Block Generator", () => {
       currentState = state;
       if (i === 0) thenBlocks.push(block);
       else if (i === 1)
-        elseIfBlocks.push({ condition: "x < 0", blocks: [block] });
+        elseIfBlocks.push({
+          condition: "x < 0",
+          blocks: [block],
+          blockType: "else-if",
+        });
       else elseBlockBlocks.push(block);
     }
 
-    const elseBlock = { blocks: elseBlockBlocks };
+    const elseBlock: ElseBlock = { blocks: elseBlockBlocks, blockType: "else" };
 
     const { block, state } = createIfBlock(
       condition,
@@ -106,10 +110,12 @@ describe("If Block Generator", () => {
         {
           condition: "y < 0",
           blocks: [dummyBlock],
+          blockType: "else-if",
         },
       ],
       {
         blocks: [dummyBlock],
+        blockType: "else",
       }
     );
     currentState = state2;
