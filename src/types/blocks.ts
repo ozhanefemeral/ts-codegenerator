@@ -26,10 +26,12 @@ export interface IfBlock extends Block {
 export interface ElseIfBlock {
   condition: string;
   blocks: CodeBlock[];
+  blockType: "else-if";
 }
 
 export interface ElseBlock {
   blocks: CodeBlock[];
+  blockType: "else";
 }
 
 export interface WhileLoopBlock extends Block {
@@ -39,7 +41,12 @@ export interface WhileLoopBlock extends Block {
 }
 
 // Add more block types as implemented
-export type CodeBlock = FunctionCallBlock | IfBlock | WhileLoopBlock;
+export type CodeBlock =
+  | FunctionCallBlock
+  | IfBlock
+  | WhileLoopBlock
+  | ElseBlock
+  | ElseIfBlock;
 
 export interface BlockAndState<T extends Block> {
   block: T;
