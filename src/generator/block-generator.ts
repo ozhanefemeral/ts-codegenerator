@@ -16,5 +16,7 @@ export function blockToTypeScript(
       return ifBlockToTypeScript(block, state);
     case "while":
       return whileBlockToTypeScript(block, state);
+    default:
+      throw new Error(`Unknown block type: ${block.blockType}`);
   }
 }
