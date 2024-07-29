@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.3.1
+
+### Patch Changes
+
+- ce009f4: update exports
+
 ## 2.3.0
 
 ### Minor Changes
