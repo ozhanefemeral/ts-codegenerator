@@ -75,7 +75,7 @@ describe("Code Generation", () => {
       [processEvenBlock],
       state,
       undefined,
-      { blocks: [processOddBlock] }
+      { blocks: [processOddBlock], blockType: "else" }
     );
     whileLoopBlocks.push(ifBlock);
     state = state5;
