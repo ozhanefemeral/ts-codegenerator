@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.4.0
+
+### Minor Changes
+
+- a57075a: add index elseif/else
+
 ## 2.3.3
 
 ### Patch Changes
