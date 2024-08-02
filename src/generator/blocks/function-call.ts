@@ -6,9 +6,13 @@ import {
 } from "generator/utils";
 import {
   BlockAndState,
+  ElseBlock,
+  ElseIfBlock,
   FunctionCallBlock,
   FunctionInfo,
+  IfBlock,
   VariableInfoWithIndex,
+  WhileLoopBlock,
 } from "types";
 import { CodeGeneratorState } from "types/generator";
 import {
@@ -135,15 +139,18 @@ function createVariableDeclaration(
 }
 
 /**
- * Creates a function call block.
+ * Creates a function call block and updates the state accordingly.
  *
- * @param {FunctionInfo} functionInfo - Information about the function to call.
- * @param {CodeGeneratorState} state - The current state of the code generator.
- * @return {FunctionCallBlock} The created function call block.
+ * @param {FunctionInfo} functionInfo - Info about the function to call.
+ * @param {CodeGeneratorState} state - Current state of the code generator.
+ * @param {IfBlock | ElseIfBlock | ElseBlock | WhileLoopBlock} [createInside] - Optional parent block to nest this function call in.
+ * @return {BlockAndState<FunctionCallBlock>} Object containing the new block and updated state.
+ * @throws {Error} If an unexpected block type is encountered when nesting.
  */
 export function createFunctionCallBlock(
   functionInfo: FunctionInfo,
-  state: CodeGeneratorState
+  state: CodeGeneratorState,
+  createInside?: IfBlock | ElseIfBlock | ElseBlock | WhileLoopBlock
 ): BlockAndState<FunctionCallBlock> {
   const index = state.blocks.length;
 
@@ -155,6 +162,7 @@ export function createFunctionCallBlock(
     type: extractReturnType(functionInfo.returnType),
     index: index,
   };
+
   const block: FunctionCallBlock = {
     functionInfo,
     parameters: functionInfo.parameters,
@@ -164,12 +172,40 @@ export function createFunctionCallBlock(
     blockType: "functionCall",
   };
 
-  const newState: CodeGeneratorState = {
-    ...state,
-    variables: [...state.variables, newVariable],
-    blocks: [...state.blocks, block],
-    isAsync: state.isAsync || block.isAsync,
-  };
+  let newState: CodeGeneratorState;
+
+  if (createInside) {
+    newState = {
+      ...state,
+      variables: [...state.variables, newVariable],
+      blocks: state.blocks.map((b) => {
+        if (b.index === createInside.index) {
+          switch (b.blockType) {
+            case "if":
+              return { ...b, thenBlocks: [...b.thenBlocks, block] };
+            case "while":
+              return { ...b, loopBlocks: [...b.loopBlocks, block] };
+            case "else-if":
+            case "else":
+              return { ...b, blocks: [...(b.blocks || []), block] };
+            default:
+              throw new Error(
+                `Unexpected block type creating inside: ${b.blockType}`
+              );
+          }
+        }
+        return b;
+      }),
+      isAsync: state.isAsync || block.isAsync,
+    };
+  } else {
+    newState = {
+      ...state,
+      variables: [...state.variables, newVariable],
+      blocks: [...state.blocks, block],
+      isAsync: state.isAsync || block.isAsync,
+    };
+  }
 
   return { block, state: newState };
 }

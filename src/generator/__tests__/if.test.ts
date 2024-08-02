@@ -67,11 +67,16 @@ describe("If Block Generator", () => {
           condition: "x < 0",
           blocks: [block],
           blockType: "else-if",
+          index: 1,
         });
       else elseBlockBlocks.push(block);
     }
 
-    const elseBlock: ElseBlock = { blocks: elseBlockBlocks, blockType: "else" };
+    const elseBlock: ElseBlock = {
+      blocks: elseBlockBlocks,
+      blockType: "else",
+      index: 2,
+    };
 
     const { block, state } = createIfBlock(
       condition,
@@ -87,7 +92,7 @@ describe("If Block Generator", () => {
     expect(block.thenBlocks).toEqual(thenBlocks);
     expect(block.elseIfBlocks).toEqual(elseIfBlocks);
     expect(block.elseBlock).toEqual(elseBlock);
-    expect(block.index).toBe(3); // 0, 1, 2 are the dummy function blocks
+    expect(block.index).toBe(3);
     expect(state.blocks).toHaveLength(4);
     expect(state.blocks[3]).toBe(block);
   });
@@ -111,11 +116,13 @@ describe("If Block Generator", () => {
           condition: "y < 0",
           blocks: [dummyBlock],
           blockType: "else-if",
+          index: 1, // Added index
         },
       ],
       {
         blocks: [dummyBlock],
         blockType: "else",
+        index: 2, // Added index
       }
     );
     currentState = state2;
@@ -137,7 +144,7 @@ describe("If Block Generator", () => {
     expect(block.thenBlocks[0]).toBe(innerIfBlock);
     expect(block.elseIfBlocks).toBeUndefined();
     expect(block.elseBlock).toBeUndefined();
-    expect(block.index).toBe(2); // 0 is the dummy function block, 1 is the inner if block
+    expect(block.index).toBe(2);
     expect(state.blocks).toHaveLength(3);
     expect(state.blocks[2]).toBe(block);
   });

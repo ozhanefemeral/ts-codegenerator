@@ -75,7 +75,11 @@ describe("Code Generation", () => {
       [processEvenBlock],
       state,
       undefined,
-      { blocks: [processOddBlock], blockType: "else" }
+      {
+        blocks: [processOddBlock],
+        blockType: "else",
+        index: 4,
+      }
     );
     whileLoopBlocks.push(ifBlock);
     state = state5;

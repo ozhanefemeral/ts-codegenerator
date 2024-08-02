@@ -23,13 +23,13 @@ export interface IfBlock extends Block {
   blockType: "if";
 }
 
-export interface ElseIfBlock {
+export interface ElseIfBlock extends Block {
   condition: string;
   blocks: CodeBlock[];
   blockType: "else-if";
 }
 
-export interface ElseBlock {
+export interface ElseBlock extends Block {
   blocks: CodeBlock[];
   blockType: "else";
 }

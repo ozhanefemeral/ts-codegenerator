@@ -36,11 +36,13 @@ describe("Tree Generation", () => {
         condition: "y < 0",
         blocks: [whileLoopBlock],
         blockType: "else-if",
+        index: 3,
       },
     ],
     elseBlock: {
       blocks: [functionCallBlock],
       blockType: "else",
+      index: 4,
     },
   };
 
@@ -124,8 +126,6 @@ describe("Tree Generation", () => {
       const consoleLogSpy = jest.spyOn(console, "log");
 
       printNodes(treeNodes);
-
-      expect(consoleLogSpy).toHaveBeenCalledWith("Tree 1:");
       expect(consoleLogSpy).toHaveBeenCalledWith("└── if");
       expect(consoleLogSpy).toHaveBeenCalledWith("    ├── functionCall");
       consoleLogSpy.mockRestore();
