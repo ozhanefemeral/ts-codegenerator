@@ -95,3 +95,55 @@ export const countAllBlocks = (blocks: CodeBlock[]): number => {
     }
   }, 0);
 };
+
+export function findAndUpdateBlock(
+  blocks: CodeBlock[],
+  targetIndex: number,
+  updateFn: (block: CodeBlock) => CodeBlock
+): CodeBlock[] {
+  return blocks.map((block) => {
+    if (block.index === targetIndex) {
+      return updateFn(block);
+    }
+
+    // Recursively search in nested blocks
+    switch (block.blockType) {
+      case "if":
+        return {
+          ...block,
+          thenBlocks: findAndUpdateBlock(
+            block.thenBlocks,
+            targetIndex,
+            updateFn
+          ),
+          elseIfBlocks: block.elseIfBlocks?.map((elseIfBlock) => ({
+            ...elseIfBlock,
+            blocks: findAndUpdateBlock(
+              elseIfBlock.blocks,
+              targetIndex,
+              updateFn
+            ),
+          })),
+          elseBlock: block.elseBlock && {
+            ...block.elseBlock,
+            blocks: findAndUpdateBlock(
+              block.elseBlock.blocks,
+              targetIndex,
+              updateFn
+            ),
+          },
+        };
+      case "while":
+        return {
+          ...block,
+          loopBlocks: findAndUpdateBlock(
+            block.loopBlocks,
+            targetIndex,
+            updateFn
+          ),
+        };
+      default:
+        return block;
+    }
+  });
+}

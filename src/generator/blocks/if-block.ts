@@ -4,11 +4,12 @@ import {
   ElseBlock,
   ElseIfBlock,
   IfBlock,
+  WhileLoopBlock,
 } from "types";
 import { CodeGeneratorState } from "types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
-import { countAllBlocks } from "generator/utils";
+import { countAllBlocks, findAndUpdateBlock } from "generator/utils";
 
 export function ifBlockToTypeScript(
   block: IfBlock,
@@ -90,7 +91,8 @@ export function createIfBlock(
   thenBlocks: CodeBlock[],
   state: CodeGeneratorState,
   elseIfBlocks?: ElseIfBlock[],
-  elseBlock?: ElseBlock
+  elseBlock?: ElseBlock,
+  createInside?: IfBlock | ElseIfBlock | ElseBlock | WhileLoopBlock
 ): BlockAndState<IfBlock> {
   const index = countAllBlocks(state.blocks);
 
@@ -103,9 +105,32 @@ export function createIfBlock(
     blockType: "if",
   };
 
+  let newBlocks: CodeBlock[];
+
+  if (createInside) {
+    newBlocks = findAndUpdateBlock(state.blocks, createInside.index, (b) => {
+      switch (b.blockType) {
+        case "if":
+          return { ...b, thenBlocks: [...b.thenBlocks, block] };
+        case "while":
+          return { ...b, loopBlocks: [...b.loopBlocks, block] };
+        case "else-if":
+        case "else":
+          return { ...b, blocks: [...(b.blocks || []), block] };
+        default:
+          throw new Error(
+            `Unexpected block type creating inside: ${b.blockType}`
+          );
+      }
+    });
+  } else {
+    newBlocks = [...state.blocks, block];
+  }
+
   const newState: CodeGeneratorState = {
     ...state,
-    blocks: [...state.blocks, block],
+    blocks: newBlocks,
+    isAsync: state.isAsync,
   };
 
   return { block, state: newState };

@@ -4,6 +4,7 @@ import {
   findVariableByType,
   getUniqueVariableName,
   PROMISE_PREFIX,
+  findAndUpdateBlock,
 } from "generator/utils";
 import {
   BlockAndState,
@@ -174,41 +175,34 @@ export function createFunctionCallBlock(
     blockType: "functionCall",
   };
 
-  let newState: CodeGeneratorState;
+  let newBlocks: CodeBlock[];
 
   if (createInside) {
-    newState = {
-      ...state,
-      variables: [...state.variables, newVariable],
-      blocks: state.blocks.map((b) => {
-        if (b.index === createInside.index) {
-          switch (b.blockType) {
-            case "if":
-              return { ...b, thenBlocks: [...b.thenBlocks, block] };
-            case "while":
-              return { ...b, loopBlocks: [...b.loopBlocks, block] };
-            case "else-if":
-            case "else":
-              return { ...b, blocks: [...(b.blocks || []), block] };
-
-            default:
-              throw new Error(
-                `Unexpected block type creating inside: ${b.blockType}`
-              );
-          }
-        }
-        return b;
-      }),
-      isAsync: state.isAsync || block.isAsync,
-    };
+    newBlocks = findAndUpdateBlock(state.blocks, createInside.index, (b) => {
+      switch (b.blockType) {
+        case "if":
+          return { ...b, thenBlocks: [...b.thenBlocks, block] };
+        case "while":
+          return { ...b, loopBlocks: [...b.loopBlocks, block] };
+        case "else-if":
+        case "else":
+          return { ...b, blocks: [...(b.blocks || []), block] };
+        default:
+          throw new Error(
+            `Unexpected block type creating inside: ${b.blockType}`
+          );
+      }
+    });
   } else {
-    newState = {
-      ...state,
-      variables: [...state.variables, newVariable],
-      blocks: [...state.blocks, block],
-      isAsync: state.isAsync || block.isAsync,
-    };
+    newBlocks = [...state.blocks, block];
   }
+
+  const newState: CodeGeneratorState = {
+    ...state,
+    variables: [...state.variables, newVariable],
+    blocks: newBlocks,
+    isAsync: state.isAsync || block.isAsync,
+  };
 
   return { block, state: newState };
 }

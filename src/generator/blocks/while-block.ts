@@ -1,8 +1,15 @@
-import { BlockAndState, CodeBlock, WhileLoopBlock } from "../../types/blocks";
+import {
+  BlockAndState,
+  CodeBlock,
+  ElseBlock,
+  ElseIfBlock,
+  IfBlock,
+  WhileLoopBlock,
+} from "../../types/blocks";
 import { CodeGeneratorState } from "../../types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
-import { countAllBlocks } from "generator/utils";
+import { countAllBlocks, findAndUpdateBlock } from "generator/utils";
 
 export function whileBlockToTypeScript(
   block: WhileLoopBlock,
@@ -21,10 +28,11 @@ export function whileBlockToTypeScript(
 export function createWhileBlock(
   condition: string,
   loopBlocks: CodeBlock[],
-  state: CodeGeneratorState
+  state: CodeGeneratorState,
+  createInside?: IfBlock | ElseIfBlock | ElseBlock | WhileLoopBlock
 ): BlockAndState<WhileLoopBlock> {
-  const totalBlockCount = countAllBlocks(state.blocks);
-  const index = totalBlockCount;
+  const index = countAllBlocks(state.blocks);
+
   const block: WhileLoopBlock = {
     condition,
     loopBlocks,
@@ -32,9 +40,32 @@ export function createWhileBlock(
     blockType: "while",
   };
 
+  let newBlocks: CodeBlock[];
+
+  if (createInside) {
+    newBlocks = findAndUpdateBlock(state.blocks, createInside.index, (b) => {
+      switch (b.blockType) {
+        case "if":
+          return { ...b, thenBlocks: [...b.thenBlocks, block] };
+        case "while":
+          return { ...b, loopBlocks: [...b.loopBlocks, block] };
+        case "else-if":
+        case "else":
+          return { ...b, blocks: [...(b.blocks || []), block] };
+        default:
+          throw new Error(
+            `Unexpected block type creating inside: ${b.blockType}`
+          );
+      }
+    });
+  } else {
+    newBlocks = [...state.blocks, block];
+  }
+
   const newState: CodeGeneratorState = {
     ...state,
-    blocks: [...state.blocks, block],
+    blocks: newBlocks,
+    isAsync: state.isAsync,
   };
 
   return { block, state: newState };
