@@ -19,6 +19,7 @@ export {
   flattenTree,
   printTree,
   printNodes,
+  findAndUpdateBlock,
 } from "./generator";
 
 export type {
