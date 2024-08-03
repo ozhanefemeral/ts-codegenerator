@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.6.1
+
+### Patch Changes
+
+- 2f45717: add export
+
 ## 2.6.0
 
 ### Minor Changes
