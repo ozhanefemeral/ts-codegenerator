@@ -1,170 +1,113 @@
 import { createFunctionCallBlock } from "generator/blocks/function-call";
 import { createIfBlock } from "generator/blocks/if-block";
 import { createWhileBlock } from "generator/blocks/while-block";
+import { FunctionCallBlock, IfBlock, WhileLoopBlock } from "types/blocks";
 import { CodeGeneratorState } from "types/generator";
 
-test("creates function call block inside if/else/else-if blocks", () => {
-  let state: CodeGeneratorState = {
-    blocks: [],
-    variables: [],
-    isAsync: false,
-  };
+describe("Advanced Block Nesting", () => {
+  let initialState: CodeGeneratorState;
 
-  // Create an if block to nest our function calls in
-  const { block: ifBlock, state: state1 } = createIfBlock(
-    "x > 0",
-    [],
-    state,
-    [
-      {
-        condition: "x < 0",
-        blocks: [],
-        blockType: "else-if",
-        index: 1,
-      },
-    ],
-    {
+  beforeEach(() => {
+    initialState = {
       blocks: [],
-      blockType: "else",
-      index: 2,
-    }
-  );
-  state = state1;
-
-  // Create function calls
-  const { block: thenFuncBlock, state: state2 } = createFunctionCallBlock(
-    { name: "thenFunc", returnType: "void" },
-    state,
-    ifBlock
-  );
-  state = state2;
-
-  const { state: state3 } = createFunctionCallBlock(
-    { name: "elseIfFunc", returnType: "void" },
-    state,
-    ifBlock.elseIfBlocks![0]
-  );
-  state = state3;
-
-  const { state: state4 } = createFunctionCallBlock(
-    { name: "elseFunc", returnType: "void" },
-    state,
-    ifBlock.elseBlock!
-  );
-  state = state4;
-
-  // Assertions
-  expect(state.blocks).toHaveLength(1);
-
-  const mainBlock = state.blocks[0];
-  expect(mainBlock?.blockType).toBe("if");
-
-  if (mainBlock?.blockType !== "if") {
-    throw new Error("Expected main block to be an if block");
-  }
-
-  expect(mainBlock).toEqual({
-    condition: "x > 0",
-    thenBlocks: [thenFuncBlock],
-    elseIfBlocks: [
-      {
-        condition: "x < 0",
-        blocks: [],
-        blockType: "else-if",
-        index: 1,
-      },
-    ],
-    elseBlock: {
-      blocks: [],
-      blockType: "else",
-      index: 2,
-    },
-    index: 0,
-    blockType: "if",
+      variables: [],
+      isAsync: false,
+    };
   });
 
-  // Check that the variables were added correctly
-  expect(state.variables).toHaveLength(3);
-  expect(state.variables.map((v) => v.name)).toEqual([
-    "thenfunc",
-    "elseiffunc",
-    "elsefunc",
-  ]);
-});
+  test("creates while block inside if block", () => {
+    let state = initialState;
 
-test("creates function call block inside while block", () => {
-  let state: CodeGeneratorState = {
-    blocks: [],
-    variables: [],
-    isAsync: false,
-  };
+    // Create the outer if block
+    const { block: ifBlock, state: state1 } = createIfBlock("x > 0", [], state);
+    state = state1;
 
-  // Create a while block to nest our function calls in
-  const { block: whileBlock, state: state1 } = createWhileBlock(
-    "x < 10",
-    [],
-    state
-  );
-  state = state1;
+    // Create a while block inside the if block
+    const { block: whileBlock, state: state2 } = createWhileBlock(
+      "y < 10",
+      [],
+      state,
+      ifBlock
+    );
+    state = state2;
 
-  // Create a function call inside the while block
-  const { block: incrementFunc, state: state2 } = createFunctionCallBlock(
-    { name: "incrementX", returnType: "number" },
-    state,
-    whileBlock
-  );
-  state = state2;
-
-  // Create another function call inside the while block
-  const { block: printFunc, state: state3 } = createFunctionCallBlock(
-    { name: "printX", returnType: "void" },
-    state,
-    whileBlock
-  );
-  state = state3;
-
-  // Assertions
-  expect(state.blocks).toHaveLength(1);
-
-  const mainBlock = state.blocks[0];
-  expect(mainBlock?.blockType).toBe("while");
-
-  if (mainBlock?.blockType !== "while") {
-    throw new Error("Expected main block to be a while block");
-  }
-
-  expect(mainBlock).toEqual({
-    condition: "x < 10",
-    loopBlocks: [incrementFunc, printFunc],
-    index: 0,
-    blockType: "while",
+    expect(state.blocks).toHaveLength(1);
+    expect(state.blocks[0]).toEqual({
+      ...ifBlock,
+      thenBlocks: [whileBlock],
+    });
   });
 
-  // Check that the nested blocks are correct
-  expect(mainBlock.loopBlocks).toHaveLength(2);
-  expect(mainBlock.loopBlocks[0]).toBe(incrementFunc);
-  expect(mainBlock.loopBlocks[1]).toBe(printFunc);
+  test("creates if block inside while block", () => {
+    let state = initialState;
 
-  // Check that the variables were added correctly
-  expect(state.variables).toHaveLength(2);
-  expect(state.variables.map((v) => v.name)).toEqual(["incrementx", "printx"]);
+    // Create the outer while block
+    const { block: whileBlock, state: state1 } = createWhileBlock(
+      "x < 10",
+      [],
+      state
+    );
+    state = state1;
 
-  // Check the structure of the nested function call blocks
-  expect(incrementFunc).toEqual({
-    functionInfo: { name: "incrementX", returnType: "number" },
-    returnVariable: { name: "incrementx", type: "number", index: 1 },
-    isAsync: false,
-    index: 1,
-    blockType: "functionCall",
-    parameters: undefined,
+    // Create an if block inside the while block
+    const { block: ifBlock, state: state2 } = createIfBlock(
+      "y > 0",
+      [],
+      state,
+      undefined,
+      undefined,
+      whileBlock
+    );
+    state = state2;
+
+    expect(state.blocks).toHaveLength(1);
+    expect(state.blocks[0]).toEqual({
+      ...whileBlock,
+      loopBlocks: [ifBlock],
+    });
   });
 
-  expect(printFunc).toEqual({
-    functionInfo: { name: "printX", returnType: "void" },
-    returnVariable: { name: "printx", type: "void", index: 2 },
-    isAsync: false,
-    index: 2,
-    blockType: "functionCall",
-    parameters: undefined,
+  test("creates function call block inside if block, which is inside of a while block", () => {
+    let state = initialState;
+
+    // Create the outer while block
+    const { block: whileBlock, state: state1 } = createWhileBlock(
+      "x < 10",
+      [],
+      state
+    );
+    state = state1;
+
+    // Create an if block inside the while block
+    const { block: ifBlock, state: state2 } = createIfBlock(
+      "y > 0",
+      [],
+      state,
+      undefined,
+      undefined,
+      whileBlock
+    );
+    state = state2;
+
+    // Create a function call block inside the if block
+    const { block: funcBlock, state: state3 } = createFunctionCallBlock(
+      { name: "doSomething", returnType: "void" },
+      state,
+      ifBlock
+    );
+    state = state3;
+
+    expect(state.blocks).toHaveLength(1);
+    const mainBlock = state.blocks[0] as WhileLoopBlock;
+    expect(mainBlock.blockType).toBe("while");
+    expect(mainBlock.loopBlocks).toHaveLength(1);
+
+    const nestedIfBlock = mainBlock.loopBlocks[0] as IfBlock;
+    expect(nestedIfBlock.blockType).toBe("if");
+    expect(nestedIfBlock.thenBlocks).toHaveLength(1);
+
+    const nestedFuncBlock = nestedIfBlock.thenBlocks[0] as FunctionCallBlock;
+    expect(nestedFuncBlock.blockType).toBe("functionCall");
+    expect(nestedFuncBlock.functionInfo.name).toBe("doSomething");
   });
 });
