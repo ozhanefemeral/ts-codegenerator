@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.5.0
+
+### Minor Changes
+
+- 9f1bbf9: add index calculation
+
 ## 2.4.0
 
 ### Minor Changes
