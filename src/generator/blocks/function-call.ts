@@ -1,4 +1,5 @@
 import {
+  countAllBlocks,
   extractReturnType,
   findVariableByType,
   getUniqueVariableName,
@@ -6,6 +7,7 @@ import {
 } from "generator/utils";
 import {
   BlockAndState,
+  CodeBlock,
   ElseBlock,
   ElseIfBlock,
   FunctionCallBlock,
@@ -152,7 +154,7 @@ export function createFunctionCallBlock(
   state: CodeGeneratorState,
   createInside?: IfBlock | ElseIfBlock | ElseBlock | WhileLoopBlock
 ): BlockAndState<FunctionCallBlock> {
-  const index = state.blocks.length;
+  const index = countAllBlocks(state.blocks);
 
   const variableName = functionInfo.name.toLowerCase();
   const newVariableName = getUniqueVariableName(variableName, state.variables);
@@ -188,6 +190,7 @@ export function createFunctionCallBlock(
             case "else-if":
             case "else":
               return { ...b, blocks: [...(b.blocks || []), block] };
+
             default:
               throw new Error(
                 `Unexpected block type creating inside: ${b.blockType}`

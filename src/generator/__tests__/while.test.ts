@@ -73,7 +73,7 @@ describe("While Block Generator", () => {
     expect(block.condition).toBe(outerCondition);
     expect(block.loopBlocks).toHaveLength(1);
     expect(block.loopBlocks[0]).toBe(innerWhileBlock);
-    expect(block.index).toBe(2); // 0 is the dummy function block, 1 is the inner while block
+    expect(block.index).toBe(3);
     expect(state.blocks).toHaveLength(3);
     expect(state.blocks[2]).toBe(block);
   });
@@ -109,7 +109,7 @@ describe("While Block Generator", () => {
     );
 
     expect(whileBlock1.index).toBe(1);
-    expect(whileBlock2.index).toBe(3);
+    expect(whileBlock2.index).toBe(4);
     expect(finalState.blocks).toHaveLength(4);
     expect(finalState.blocks[1]).toBe(whileBlock1);
     expect(finalState.blocks[3]).toBe(whileBlock2);

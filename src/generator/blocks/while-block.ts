@@ -2,6 +2,7 @@ import { BlockAndState, CodeBlock, WhileLoopBlock } from "../../types/blocks";
 import { CodeGeneratorState } from "../../types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
+import { countAllBlocks } from "generator/utils";
 
 export function whileBlockToTypeScript(
   block: WhileLoopBlock,
@@ -22,8 +23,8 @@ export function createWhileBlock(
   loopBlocks: CodeBlock[],
   state: CodeGeneratorState
 ): BlockAndState<WhileLoopBlock> {
-  const index = state.blocks.length;
-
+  const totalBlockCount = countAllBlocks(state.blocks);
+  const index = totalBlockCount;
   const block: WhileLoopBlock = {
     condition,
     loopBlocks,

@@ -8,6 +8,7 @@ import {
 import { CodeGeneratorState } from "types/generator";
 import { factory, Statement } from "typescript";
 import { blockToTypeScript } from "../block-generator";
+import { countAllBlocks } from "generator/utils";
 
 export function ifBlockToTypeScript(
   block: IfBlock,
@@ -91,7 +92,7 @@ export function createIfBlock(
   elseIfBlocks?: ElseIfBlock[],
   elseBlock?: ElseBlock
 ): BlockAndState<IfBlock> {
-  const index = state.blocks.length;
+  const index = countAllBlocks(state.blocks);
 
   const block: IfBlock = {
     condition,

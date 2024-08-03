@@ -144,7 +144,7 @@ describe("If Block Generator", () => {
     expect(block.thenBlocks[0]).toBe(innerIfBlock);
     expect(block.elseIfBlocks).toBeUndefined();
     expect(block.elseBlock).toBeUndefined();
-    expect(block.index).toBe(2);
+    expect(block.index).toBe(5);
     expect(state.blocks).toHaveLength(3);
     expect(state.blocks[2]).toBe(block);
   });

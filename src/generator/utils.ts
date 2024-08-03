@@ -1,4 +1,4 @@
-import { FunctionInfo, VariableInfoWithIndex } from "types";
+import { CodeBlock, FunctionInfo, VariableInfoWithIndex } from "types";
 
 export const PROMISE_PREFIX = "Promise<";
 
@@ -77,3 +77,21 @@ export function extractVariables(
     index: index,
   }));
 }
+
+export const countAllBlocks = (blocks: CodeBlock[]): number => {
+  return blocks.reduce((count, block) => {
+    if (block.blockType === "if") {
+      return (
+        count +
+        1 +
+        countAllBlocks(block.thenBlocks) +
+        countAllBlocks(block.elseIfBlocks?.flatMap((b) => b.blocks) || []) +
+        countAllBlocks(block.elseBlock?.blocks || [])
+      );
+    } else if (block.blockType === "while") {
+      return count + 1 + countAllBlocks(block.loopBlocks);
+    } else {
+      return count + 1;
+    }
+  }, 0);
+};
