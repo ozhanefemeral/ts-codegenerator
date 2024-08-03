@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.6.0
+
+### Minor Changes
+
+- b525e08: add inner block updates
+
 ## 2.5.0
 
 ### Minor Changes
