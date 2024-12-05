@@ -3,4 +3,5 @@ export * from "./modules";
 export * from "./common";
 export * from "./generator";
 export * from "./tree";
-export * from "./prisma";
+export * from "./prisma/prisma";
+export * from "./prisma/crud";

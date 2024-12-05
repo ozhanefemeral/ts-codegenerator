@@ -6,7 +6,7 @@ import {
   PrismaRelation,
   PrismaEnum,
   RelationType,
-} from "../types/prisma";
+} from "../types/prisma/prisma";
 
 export class PrismaParser {
   private schema: string;

@@ -6,7 +6,13 @@ export type RelationType =
 
 export interface PrismaAttribute {
   name: string;
-  args: Record<string, any>;
+  args: {
+    fields?: string[];
+    references?: string[];
+    map?: string;
+    default?: string | number | boolean;
+    [key: string]: unknown;
+  };
 }
 
 export interface PrismaField {
