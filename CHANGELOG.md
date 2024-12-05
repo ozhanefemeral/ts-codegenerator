@@ -1,5 +1,17 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.8.0
+
+### Minor Changes
+
+- fix test
+
+## 2.7.0
+
+### Minor Changes
+
+- feat: add crud generator tests and improve types
+
 ## 2.6.1
 
 ### Patch Changes
