@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.8.1
+
+### Patch Changes
+
+- 85563b1: revert workflow
+
 ## 2.8.0
 
 ### Minor Changes
