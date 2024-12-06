@@ -27,27 +27,27 @@ jobs:
         with:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
+          scope: "@ozhanefe"
 
       - name: Install Dependencies
         run: bun install
+
+      - name: Build
+        run: bun run build
 
       - name: Setup Git User
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: Version
+      - name: Version and Publish
         run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           bun changeset version
           git add .
           git commit -m "chore: version packages" || echo "No changes to commit"
           git push
-
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: bun run release
+          bun changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
