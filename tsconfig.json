@@ -7,7 +7,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "strict": true,
     "moduleResolution": "node",
     "baseUrl": "./",
@@ -19,6 +19,6 @@
       "*": ["node_modules/*", "src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "jest.config.ts", "build.js"],
   "exclude": ["node_modules", "dist"]
 }
