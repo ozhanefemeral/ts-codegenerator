@@ -12,7 +12,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -31,35 +31,24 @@ jobs:
       - name: Install Dependencies
         run: bun install
 
-      - name: Create Release
+      - name: Setup Git User
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Version
+        run: |
+          bun changeset version
+          git add .
+          git commit -m "chore: version packages" || echo "No changes to commit"
+          git push
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          # Get latest version
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-
-          # Parse commits since last tag
-          COMMITS=$(git log --format=%B $(git describe --tags --abbrev=0)..HEAD)
-
-          # Determine version bump
-          if echo "$COMMITS" | grep -q "^BREAKING CHANGE\|^[[:alpha:]]\+!:"; then
-            # Major bump for breaking changes
-            NEW_VERSION=$(semver -i major $CURRENT_VERSION)
-          elif echo "$COMMITS" | grep -q "^feat:"; then
-            # Minor bump for features
-            NEW_VERSION=$(semver -i minor $CURRENT_VERSION)
-          else
-            # Patch bump for fixes
-            NEW_VERSION=$(semver -i patch $CURRENT_VERSION)
-          fi
-
-          # Update version
-          npm version $NEW_VERSION -m "chore(release): %s"
-
-          # Push changes
-          git push --follow-tags
-
-          # Publish
-          npm publish
