@@ -8,6 +8,7 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "/__tests__/scanner-mock-codebase/",
+    "/src/prisma/__tests__/prisma-mock-schema/",
   ],
   transform: {
     "^.+\\.ts$": [
