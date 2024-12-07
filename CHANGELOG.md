@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.9.1
+
+### Minor Changes
+
+- 550fe32: revert workflow
+
 ## 2.8.0
 
 ### Minor Changes
