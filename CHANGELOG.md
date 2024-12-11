@@ -1,5 +1,11 @@
 # @ozhanefe/ts-codegenerator
 
+## 2.10.0
+
+### Minor Changes
+
+- d220d53: extend prisma config and features
+
 ## 2.9.1
 
 ### Minor Changes
