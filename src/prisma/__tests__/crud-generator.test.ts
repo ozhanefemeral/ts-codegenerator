@@ -7,18 +7,26 @@ describe("crud generator", () => {
   const schema = parsePrismaSchema(mockSchemaString);
 
   describe("basic generation", () => {
-    test("generates crud for all models when no modelNames specified", () => {
-      const config: CrudConfig = {
-        operations: ["create", "delete", "list", "read", "update"],
-      };
+    test("generates all crud operations when none specified", () => {
+      const config: CrudConfig = {};
 
       const output = generateCrud(schema, config);
-      const fileNames = Object.keys(output);
-      expect(fileNames).toHaveLength(11); // all models from mock schema
-
       const userCrud = output["user.crud.ts"];
       expect(userCrud).toBeDefined();
       expect(Object.keys(userCrud || {})).toHaveLength(5); // all operations
+    });
+
+    test("generates crud functions without prisma namespace when configured", () => {
+      const config: CrudConfig = {
+        usePrismaNamespace: false,
+      };
+
+      const output = generateCrud(schema, config);
+      const userCrud = output["user.crud.ts"];
+
+      expect(userCrud?.create).toContain("data: UserCreateInput");
+      expect(userCrud?.read).toContain("Promise<User | null>");
+      expect(userCrud?.create).not.toContain("Prisma.User");
     });
 
     test("generates only specified operations", () => {

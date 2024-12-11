@@ -5,9 +5,10 @@ export type ModelOperation = {
 };
 
 export type CrudConfig = {
-  operations: CrudOperation[];
+  operations?: CrudOperation[];
   modelNames?: string[];
   outputDir?: string;
+  usePrismaNamespace?: boolean;
 };
 
 export type CrudOutput = {

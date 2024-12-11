@@ -12,7 +12,17 @@ export class CrudGenerator {
 
   constructor(schema: PrismaSchema, config: CrudConfig) {
     this.schema = schema;
-    this.config = config;
+    this.config = {
+      ...config,
+      operations: config.operations || [
+        "create",
+        "read",
+        "update",
+        "delete",
+        "list",
+      ],
+      usePrismaNamespace: config.usePrismaNamespace !== false,
+    };
   }
 
   generate(): CrudOutput {
@@ -38,7 +48,7 @@ export class CrudGenerator {
   private generateModelOperations(model: PrismaModel): ModelOperation {
     const operations: ModelOperation = {};
 
-    for (const op of this.config.operations) {
+    for (const op of this.config.operations!) {
       operations[op] = this.generateOperation(model, op);
     }
 
@@ -51,23 +61,24 @@ export class CrudGenerator {
   ): string {
     const modelName = model.name;
     const varName = this.toCamelCase(modelName);
+    const typePrefix = this.config.usePrismaNamespace ? "Prisma." : "";
 
     switch (operation) {
       case "create":
         return `
-async function create${modelName}(data: Prisma.${modelName}CreateInput) {
+async function create${modelName}(data: ${typePrefix}${modelName}CreateInput) {
   return prisma.${varName}.create({ data });
 }`;
 
       case "read":
         return `
-async function get${modelName}(id: string) {
+async function get${modelName}(id: string): Promise<${typePrefix}${modelName} | null> {
   return prisma.${varName}.findUnique({ where: { id } });
 }`;
 
       case "update":
         return `
-async function update${modelName}(id: string, data: Prisma.${modelName}UpdateInput) {
+async function update${modelName}(id: string, data: ${typePrefix}${modelName}UpdateInput) {
   return prisma.${varName}.update({ where: { id }, data });
 }`;
 
@@ -82,9 +93,9 @@ async function delete${modelName}(id: string) {
 async function list${modelName}(params?: { 
   skip?: number;
   take?: number;
-  where?: Prisma.${modelName}WhereInput;
-  orderBy?: Prisma.${modelName}OrderByWithRelationInput;
-}) {
+  where?: ${typePrefix}${modelName}WhereInput;
+  orderBy?: ${typePrefix}${modelName}OrderByWithRelationInput;
+}): Promise<${typePrefix}${modelName}[]> {
   return prisma.${varName}.findMany(params);
 }`;
 
