@@ -6,6 +6,7 @@ import {
   ModelOperation,
 } from "../types/prisma/crud";
 
+/** Generates CRUD operations for Prisma models */
 export class CrudGenerator {
   private schema: PrismaSchema;
   private config: CrudConfig;
@@ -109,9 +110,15 @@ async function list${modelName}(params?: {
   }
 }
 
+/**
+ * Generates CRUD operations for given schema and config
+ * @param schema - Parsed Prisma schema
+ * @param config - Generation configuration
+ * @returns Generated CRUD operations by filename
+ */
 export function generateCrud(
   schema: PrismaSchema,
   config: CrudConfig
 ): CrudOutput {
-  return new CrudGenerator(schema, config).generate() as CrudOutput;
+  return new CrudGenerator(schema, config).generate();
 }
