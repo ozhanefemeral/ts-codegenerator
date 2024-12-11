@@ -76,3 +76,64 @@ At the core of `ts-codegenerator` is the concept of 'Blocks'. Blocks are reusabl
 ## Contributing
 
 We welcome contributions to improve `ts-codegenerator`. If you've identified a bug, have a feature request, or want to contribute code, please open an issue or pull request on our GitHub repository.
+
+## Prisma Tools
+
+Lightweight utilities for working with prisma schemas and generating crud operations.
+
+### features
+
+- parse prisma schema files into typed objects
+- generate typed crud operations
+- customizable output with namespace control
+
+#### parsing Prisma schemas
+
+```typescript
+import { parsePrismaSchema } from "@ozhanefe/ts-codegenerator";
+
+const schema = parsePrismaSchema(`
+  model User {
+    id Int @id
+    email String @unique
+    posts Post[]
+  }
+  // ...rest of schema
+`);
+
+// schema.models contains typed model definitions
+// schema.relations contains relationship metadata
+// schema.enums contains enum definitions
+```
+
+#### generating crud operations
+
+```typescript
+import { generateCrud } from "@ozhanefe/ts-codegenerator";
+
+const config = {
+  // optional: specific operations to generate
+  operations: ["create", "read", "update", "delete", "list"],
+
+  // optional: specific models to generate for
+  modelNames: ["User", "Post"],
+
+  // optional: output directory for generated files
+  outputDir: "./src/crud",
+
+  // optional: whether to use Prisma namespace (defaults to true)
+  usePrismaNamespace: false,
+};
+
+const output = generateCrud(schema, config);
+```
+
+#### type generation
+
+by default, types are generated with the prisma namespace (e.g. `Prisma.User`). you can disable this with:
+
+```typescript
+generateCrud(schema, { usePrismaNamespace: false });
+```
+
+this will generate types without the namespace (e.g. just `User`).
