@@ -27,8 +27,13 @@ export class PrismaParser {
   }
 
   extractModels(): string[] {
+    const schemaWithoutConfig = this.schema.replace(
+      /(datasource|generator)\s+\w+\s*{[^}]*}/g,
+      ""
+    );
+
     const modelRegex = /model\s+(\w+)\s*{([^}]*)}/g;
-    const matches = [...this.schema.matchAll(modelRegex)];
+    const matches = [...schemaWithoutConfig.matchAll(modelRegex)];
 
     if (matches.length === 0) {
       throw new Error("no valid models found in schema");

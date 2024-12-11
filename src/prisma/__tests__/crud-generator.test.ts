@@ -1,7 +1,7 @@
 import { generateCrud } from "../crud-generator";
 import { parsePrismaSchema } from "../prisma-parser";
 import { mockSchemaString } from "./prisma-mock-schema";
-import { CrudConfig } from "../../types/prisma/crud";
+import { CrudConfig, CrudOperation } from "../../types/prisma/crud";
 
 describe("crud generator", () => {
   const schema = parsePrismaSchema(mockSchemaString);
@@ -113,7 +113,7 @@ describe("crud generator", () => {
   });
 
   describe("file naming", () => {
-    test("generates correct file names in lowercase", () => {
+    test("generates correct file names in camelCase", () => {
       const config: CrudConfig = {
         operations: ["create"],
         modelNames: ["User", "OrderItem"],
@@ -121,7 +121,32 @@ describe("crud generator", () => {
 
       const output = generateCrud(schema, config);
       expect(output["user.crud.ts"]).toBeDefined();
-      expect(output["orderitem.crud.ts"]).toBeDefined();
+      expect(output["orderItem.crud.ts"]).toBeDefined();
     });
+  });
+
+  test("handles multi-word model names correctly", () => {
+    const schema = {
+      models: [
+        {
+          name: "FurnitureVariant",
+          fields: [],
+          attributes: [],
+        },
+      ],
+      enums: [],
+      relations: [],
+    };
+
+    const config = {
+      operations: ["create"] as CrudOperation[],
+    };
+
+    const result = generateCrud(schema, config);
+
+    expect(result["furnitureVariant.crud.ts"]).toBeDefined();
+    expect(result["furnitureVariant.crud.ts"]!.create).toContain(
+      "prisma.furnitureVariant.create"
+    );
   });
 });

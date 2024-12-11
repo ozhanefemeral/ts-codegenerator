@@ -32,7 +32,7 @@ export class CrudGenerator {
   }
 
   private getFileName(model: PrismaModel): string {
-    return `${model.name.toLowerCase()}.crud.ts`;
+    return `${this.toCamelCase(model.name)}.crud.ts`;
   }
 
   private generateModelOperations(model: PrismaModel): ModelOperation {
@@ -50,7 +50,7 @@ export class CrudGenerator {
     operation: CrudOperation
   ): string {
     const modelName = model.name;
-    const varName = modelName.toLowerCase();
+    const varName = this.toCamelCase(modelName);
 
     switch (operation) {
       case "create":
@@ -91,6 +91,10 @@ async function list${modelName}(params?: {
       default:
         throw new Error(`unsupported operation: ${operation}`);
     }
+  }
+
+  private toCamelCase(str: string): string {
+    return str.charAt(0).toLowerCase() + str.slice(1);
   }
 }
 
